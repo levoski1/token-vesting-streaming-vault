@@ -230,16 +230,12 @@ fn test_claimable_fractional_rounding() {
 }
 
 #[test]
+#[should_panic]
 fn test_admin_cannot_withdraw_recipient_stream() {
     let env = Env::default();
     env.mock_all_auths();
     let (client, admin, recipient, _) = setup(&env);
     client.create_stream(&recipient, &1_000, &0, &100);
     set_time(&env, 50);
-    // Admin trying to withdraw recipient's stream should fail auth
-    // (recipient.require_auth() will reject admin address)
-    let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        client.withdraw(&admin);
-    }));
-    assert!(result.is_err());
+    client.withdraw(&admin);
 }
