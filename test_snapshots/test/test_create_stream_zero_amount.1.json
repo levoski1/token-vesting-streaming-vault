@@ -139,7 +139,11 @@
                   "storage": [
                     {
                       "key": {
-                        "string": "admin"
+                        "vec": [
+                          {
+                            "symbol": "Admin"
+                          }
+                        ]
                       },
                       "val": {
                         "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM"
@@ -147,7 +151,11 @@
                     },
                     {
                       "key": {
-                        "string": "token"
+                        "vec": [
+                          {
+                            "symbol": "Token"
+                          }
+                        ]
                       },
                       "val": {
                         "address": "CCABDO7UZXYE4W6GVSEGSNNZTKSLFQGKXXQTH6OX7M7GKZ4Z6CUJNGZN"

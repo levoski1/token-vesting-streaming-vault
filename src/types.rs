@@ -1,6 +1,13 @@
 use soroban_sdk::{contracttype, Address};
 
 #[contracttype]
+pub enum DataKey {
+    Admin,
+    Token,
+    Stream(Address),
+}
+
+#[contracttype]
 #[derive(Clone)]
 pub struct StreamState {
     pub recipient: Address,
