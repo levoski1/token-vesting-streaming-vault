@@ -11,10 +11,6 @@ use types::StreamState;
 const ADMIN: &str = "admin";
 const TOKEN: &str = "token";
 
-fn stream_key(recipient: &Address) -> Address {
-    recipient.clone()
-}
-
 #[contract]
 pub struct VestingVault;
 
@@ -46,7 +42,7 @@ impl VestingVault {
         assert!(total_amount > 0, "amount must be positive");
         assert!(end_time > start_time, "end_time must be after start_time");
 
-        let key = stream_key(&recipient);
+        let key = recipient.clone();
         assert!(
             !env.storage().persistent().has(&key),
             "stream already exists"
@@ -69,7 +65,7 @@ impl VestingVault {
 
     /// Issue #2 — Return the currently unlocked (claimable) token amount for a recipient.
     pub fn claimable_amount(env: Env, recipient: Address) -> i128 {
-        let key = stream_key(&recipient);
+        let key = recipient.clone();
         let stream: StreamState = env.storage().persistent().get(&key).unwrap();
         Self::unlocked(&env, &stream) - stream.claimed_amount
     }
@@ -78,7 +74,7 @@ impl VestingVault {
     pub fn withdraw(env: Env, recipient: Address) {
         recipient.require_auth();
 
-        let key = stream_key(&recipient);
+        let key = recipient.clone();
         let mut stream: StreamState = env.storage().persistent().get(&key).unwrap();
 
         let claimable = Self::unlocked(&env, &stream) - stream.claimed_amount;
