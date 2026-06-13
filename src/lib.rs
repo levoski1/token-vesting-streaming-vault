@@ -60,6 +60,7 @@ impl VestingVault {
             end_time,
         };
         env.storage().persistent().set(&key, &stream);
+        env.storage().persistent().extend_ttl(&key, 100_000, 100_000);
 
         // Transfer tokens from admin into the contract
         let token_addr: Address = env.storage().instance().get(&TOKEN).unwrap();
@@ -86,6 +87,7 @@ impl VestingVault {
 
         stream.claimed_amount += claimable;
         env.storage().persistent().set(&key, &stream);
+        env.storage().persistent().extend_ttl(&key, 100_000, 100_000);
 
         let token_addr: Address = env.storage().instance().get(&TOKEN).unwrap();
         let token_client = token::Client::new(&env, &token_addr);
