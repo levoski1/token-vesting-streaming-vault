@@ -32,6 +32,36 @@ cargo build
 cargo test
 ```
 
+## Getting Started with Soroban
+
+This contract targets the Soroban smart contract platform on Stellar. Soroban contracts compile to WebAssembly (WASM) and run inside the Stellar validator.
+
+### wasm32v1-none target
+
+Soroban contracts must be compiled to the `wasm32v1-none` target (WebAssembly without a standard OS interface). Add it once:
+
+```bash
+rustup target add wasm32v1-none
+```
+
+Build the contract WASM:
+
+```bash
+cargo build --target wasm32v1-none --release
+```
+
+The output will be at `target/wasm32v1-none/release/token_vesting_streaming_vault.wasm`.
+
+> **Note:** Regular `cargo build` (without `--target`) compiles for your host OS and is only used to run tests locally. The WASM build is required for deployment.
+
+### Test Snapshots
+
+The `test_snapshots/` directory contains Soroban ledger state snapshots generated during test runs. These snapshots capture the exact ledger state (storage, events, auth) at key points in tests, making assertions deterministic across environments.
+
+- Snapshots are auto-generated when tests run with `SOROBAN_TEST_SNAPSHOTS=true`.
+- Committed snapshots act as regression guards — a snapshot mismatch means contract behaviour changed.
+- If you intentionally change contract behaviour, regenerate snapshots by deleting the relevant `.json` files and re-running `cargo test`.
+
 ## Contract Architecture
 
 ### Data Model
@@ -98,6 +128,38 @@ cargo test
 - **Re-initialization**: Guarded by an explicit storage check.
 - **Authentication**: Admin-gated stream creation, recipient-gated withdrawals.
 
+## Commit Message Format
+
+Use the following format for all commit messages:
+
+```
+<type>: <subject>
+```
+
+**Types:**
+
+| Type | When to use |
+|------|-------------|
+| `feat` | New feature or contract function |
+| `fix` | Bug fix |
+| `docs` | Documentation only changes |
+| `test` | Adding or updating tests |
+| `refactor` | Code change that neither fixes a bug nor adds a feature |
+| `chore` | Build process, CI, dependency updates |
+
+**Examples:**
+
+```
+feat: add cancel_stream function
+fix: prevent duplicate stream creation panic
+docs: add mainnet deployment guide
+test: add claimable_amount edge case for zero duration
+refactor: extract vesting math into helper function
+```
+
+- Subject line: imperative mood, lowercase, no trailing period, ≤ 72 characters.
+- For breaking changes, add `BREAKING CHANGE:` in the commit body.
+
 ## Pull Request Process
 
 1. Fork the repository and create a feature branch from `master`.
@@ -105,6 +167,27 @@ cargo test
 3. Run `cargo fmt` and `cargo clippy`.
 4. Open a pull request with a clear description of the change and link to any related issues.
 5. Ensure CI passes (test + WASM build).
+
+## Code Review
+
+All contributions go through pull request review before merging.
+
+**For authors:**
+- Keep PRs focused — one logical change per PR.
+- Write a clear PR description explaining *what* changed and *why*.
+- Link to the relevant issue (e.g. `Closes #42`).
+- Respond to review comments promptly; mark threads as resolved once addressed.
+
+**For reviewers:**
+- Check that new code has corresponding tests and that all CI checks pass.
+- Verify that Soroban-specific concerns are addressed: auth requirements, storage key conflicts, integer overflow safety, and checks-effects-interactions ordering.
+- Prefer asking questions over demanding changes — leave constructive, specific feedback.
+- Approve only when you would be comfortable merging without further changes.
+
+**Merge policy:**
+- At least one approving review is required.
+- All CI checks (tests + WASM build) must pass.
+- Squash-merge to keep `master` history linear.
 
 ## Good First Issues
 
